@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -56,5 +57,30 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    public function updateTimes(Request $request, $userId)
+    {
+        $user = User::findOrFail($userId);
+        
+        if($request->times <= 0) {
+            return to_route('dashboard')->with('error','Invalid Times');
+        }
+
+        $user->times += $request->times;
+        $user->save();
+
+        return to_route('dashboard')->with('success','Times Added Successfully');
+    }
+
+    public function userTimes()
+    {
+        $user = Auth::user();
+        $user->times -= 1;
+        $user->save();
+
+        return response()->json([
+            'times' => $user->times,
+        ]);
     }
 }
