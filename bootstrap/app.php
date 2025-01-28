@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'isTimesPostive' => App\Http\Middleware\IsTimesPostiveMiddleware::class,
+            'isRunBefore' => App\Http\Middleware\IsRunBefore::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

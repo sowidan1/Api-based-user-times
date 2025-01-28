@@ -17,17 +17,24 @@ class User extends Authenticatable
         'password',
         'isAdmin',
         'times',
+        'run_one_time',
     ];
 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
         'remember_token',
     ];
+
+
+    public function durations()
+    {
+        return $this->hasOne(Duration::class);
+    }
 
     /**
      * Get the attributes that should be cast.

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PackageController;
 use App\Http\Controllers\ProfileController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
@@ -9,18 +10,29 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    $users = User::where('isAdmin', 0)->paginate(10);
+    $users = User::with('durations')->where('isAdmin', 0)->paginate(10);
 
     return view('dashboard', compact('users'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::post('/users/{user}/times', [ProfileController::class, 'updateTimes'])->name('users.update.times');
-    Route::get('/users/times', [ProfileController::class, 'userTimes'])->name('users.times')->middleware('isTimesPostive');
+// admin
 
+    Route::post('/{user}/times', [PackageController::class, 'userTimesDashboard'])->name('users.update.times');
+
+    Route::get('/{user}/one-time', [PackageController::class, 'oneTimeDashboard'])->name('one.time.dashboard');
+
+    Route::post('/{user}/duration', [PackageController::class, 'durationDashboard'])->name('duration.dashboard');
+
+// users
+
+    Route::get('/times', [PackageController::class, 'userTimesApi'])->name('times')->middleware('isTimesPostive');
+
+    Route::get('/one-time', [PackageController::class, 'oneTimeApi'])->name('one.time')->middleware('isRunBefore');
+
+    Route::get('/duration', [PackageController::class, 'durationApi'])->name('duration')->middleware('isRunBefore');
 });
 
-require __DIR__.'/auth.php';
+
+
+require __DIR__ . '/auth.php';
