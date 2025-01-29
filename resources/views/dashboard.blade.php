@@ -11,6 +11,55 @@
                 @endforeach
                 @if (auth()->user()->isAdmin)
                     <div class="overflow-auto" style="height:100%">
+                        <center>
+                            <div class="relative inline-block text-left" x-data="{ open: false }">
+                                <button @click="open = !open" type="button"
+                                    class="inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                    id="menu-button" aria-expanded="true" aria-haspopup="true">
+                                    Menu
+                                    <!-- Heroicon name: solid/chevron-down -->
+                                    <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd"
+                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+
+                                <!-- Dropdown menu -->
+                                <div x-show="open" @click.away="open = false"
+                                    class="absolute right-0 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                                    role="menu" aria-orientation="vertical" aria-labelledby="menu-button"
+                                    tabindex="-1">
+                                    <div class="py-1" role="none">
+                                        <form method="get" action="{{ route('one.time') }}">
+                                            <input type="hidden" name="delete" value="1">
+                                            <button type="submit"
+                                                class="w-full text-left text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100">
+                                                one time run
+                                            </button>
+                                        </form>
+                                        <form method="get" action="{{ route('times') }}">
+                                            <input type="hidden" name="delete" value="1">
+                                            <button type="submit"
+                                                class="w-full text-left text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100">
+                                                times
+                                            </button>
+                                        </form>
+                                        <form method="get" action="{{ route('duration') }}">
+                                            <input type="hidden" name="delete" value="1">
+                                            <button type="submit"
+                                                class="w-full text-left text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100">
+                                                durations
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </center>
+
+                        <!-- Include Alpine.js -->
+                        <script src="//unpkg.com/alpinejs" defer></script>
                         <table class="w-full divide-y divide-gray-200 table-auto shadow-md">
                             <thead class="bg-gray-50">
                                 <tr>
@@ -214,7 +263,7 @@
                                                 </div>
                                             </div>
 
-
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -228,27 +277,11 @@
                 @else
                     <div class="overflow-x-auto" style="height:100%">
                         <div>
-                            @if (Auth::user()->one_time == 1)
+                            @if (Auth::user()->run_one_time == 1 || Auth::user()->times > 0 || Auth::user()->durations)
                                 <button
                                     class="inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                                    <a href="{{ route('one.time') }}">
-                                        One Time
-                                    </a>
-                                </button>
-                            @endif
-                            @if (Auth::user()->times > 0)
-                                <button
-                                    class="inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                                    <a href="{{ route('times') }}">
-                                        Times
-                                    </a>
-                                </button>
-                            @endif
-                            @if (Auth::user()->has('durations'))
-                                <button
-                                    class="inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                                    <a href="{{ route('duration') }}">
-                                        Duration
+                                    <a href="{{ route('index') }}">
+                                        Click Here
                                     </a>
                                 </button>
                             @endif

@@ -11,28 +11,18 @@ use Symfony\Component\HttpFoundation\Response;
 
 class IsRunBefore
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next): Response
     {
+        if ($request->has('delete') && auth()->user()->isAdmin == 1 ) {
+            return $next($request);
+        }
 
         $user = User::where('id', Auth::user()->id)->first();
 
-        if($user && $user->run_one_time === 1) {
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'API endpoint not found',
-                    'data' => null
-                ], 404);
-            }
-
-            abort(404);
-
+        if($user && $user->run_one_time == 1) {
+            return $next($request);
         }
-        return $next($request);
+
+        return redirect()->route('dashboard')->with('error', 'You have not run the one time api.');
     }
 }

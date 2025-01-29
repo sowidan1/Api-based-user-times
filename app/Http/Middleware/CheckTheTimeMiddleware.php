@@ -2,33 +2,35 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\TimeDelete;
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\Response;
 
 class CheckTheTimeMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next)
     {
-        $time = TimeDelete::where('user_id', Auth::user()->id)->first();
-
-        $now = now()->startOfSecond();
-
-        if($time == NULL){
-            return 'insert time first';
-        }
-
-        if ($time->start_time <= $now && $now <= $time->end_time) {
+        if ($request->has('delete') && auth()->user()->isAdmin == 1) {
             return $next($request);
         }
 
-        abort(404);
+        $user = User::with('durations')->where('id', Auth::user()->id)->first();
+
+        $now = now()->startOfSecond();
+
+        if (!$user->durations) {
+            return to_route('dashboard')->with('error', 'You have no time to use this functionality.');
+        }
+        if ($now > $user->durations->end_time) {
+            $user->durations()->delete();
+            return to_route('dashboard')->with('error', 'Your time has expired.');
+        }
+
+        if ($now >= $user->durations->start_time && $now <= $user->durations->end_time) {
+            return $next($request);
+        }
+
+        return to_route('dashboard')->with('error', 'wating for your time.');
     }
 }

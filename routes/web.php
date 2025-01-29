@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\PackageController;
-use App\Http\Controllers\ProfileController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
@@ -26,11 +25,15 @@ Route::middleware('auth')->group(function () {
 
 // users
 
+    Route::get('/index', [PackageController::class, 'index'])->name('index');
+
+// user redirect
+
     Route::get('/times', [PackageController::class, 'userTimesApi'])->name('times')->middleware('isTimesPostive');
 
     Route::get('/one-time', [PackageController::class, 'oneTimeApi'])->name('one.time')->middleware('isRunBefore');
 
-    Route::get('/duration', [PackageController::class, 'durationApi'])->name('duration')->middleware('isRunBefore');
+    Route::get('/duration', [PackageController::class, 'durationApi'])->name('duration')->middleware('checkTheTime');
 });
 
 
